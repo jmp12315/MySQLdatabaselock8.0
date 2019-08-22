@@ -51,8 +51,6 @@
 
 +++
 
-##  行锁
-
 @snap[text-06 border-dashed-black]
 @ul
 - Record Locks-记录锁 
@@ -70,19 +68,44 @@
 
 +++
 
-##  行锁
+@snap[text-06 border-dashed-black]
+@ul
+- Insert Inten]on Locks-插入意向锁
+- 插入意向锁定是在行插入之前由INSERT操作设置的一种间隙锁。 这个锁表示插入的意图，即插入相同索引间隙的多个事务如果不插入间隙内的相同位置则不需要等待彼此。 假设存在值为4和7的索引记录。分别尝试插入值5和6的事务分别在获取插入行上的排它锁之前用插入意图锁定锁定4和7之间的间隙， 但是不要互相阻塞，因为这些行是不冲突的。
+@ulend
+@snapend
+
++++
+
+### Innodb中锁种类解读
 
 @snap[text-06 border-dashed-black]
 @ul
-- Record Locks-记录锁 
-- MySQL中记录锁都是添加在索引上，即使表上没有索引也会在隐藏的聚集索引上添 加记录锁
-- Gap Locks-间隙锁 
-- 间隙锁锁定范围是索引记录之间的间隙或者第一个或最后一个索引记录之前的间隙，
-- 例如一个事务执行:select * from t where c1 > 10 and c1 < 20 for update ; 那么当插入c1 
-- 等于15时就会被阻塞否则再次查询得到结果就与第一次不一致 
-- Next-Key Locks  
+- 我们可以查看到锁情况，但是锁种类很多如何怎样判别？ 
+- 从show innodb status 、 show engine innodb status\G 中看到的LOCK_MODE含义如下: 
+- IX //意向锁拍他锁 
+- X //Next-Key Lock 锁定记录本身和记录之前的间隙(X) 
+- S //Next-Key Lock 锁定记录本身和记录之前的间隙(S) 
+- X,REC_NOT_GAP// 代表只锁定记录本身(X)  
+- S,REC_NOT_GAP // 代表只锁定记录本身(S) 
 - Next-Key Locks是Record Locks与Gap Locks间隙锁的组合，也就是索引记录本身加上 
-- 之前的间隙。间隙锁防止了保证RR级别下不出现幻读现象会，防止同一个事务内得
-- 到的结果不一致。间隙锁在show engine innodb 输出如下 
+- X,INSERT_INTENTION //代表插入意向锁 
+- X,GAP //代表GAP
+@ulend
+@snapend
+
+---
+
+
+## 表锁 
+
+@snap[text-06 border-dashed-black]
+@ul
+-  Inten]on Locks-意向锁:意向锁在MySQL中是表级别锁，表示将来要在表上什么类型的锁(IX/IS) 
+- SELECT … FOR SHARE 意向共享锁(IS):要获取表中某行的共享锁之前，它必须首先在表 上获取IS锁 
+- SELECT … FOR UPDATE 意向排他锁(IX):要获取表中某行的独占锁之前，它必须首先获取表上的IX锁 
+- AUTO-INC Locks-自增锁 
+- AUTO-INC锁是由插入到具有AUTO_INCREMENT列的表中的事务所采用的特殊表级锁。在最简单的情况下，如果一个事务正在向表中插入值，则任何其他事务必须等待对该表执行自己的插入，以便第一个事务插入的行接收连续的主键值。  
+- 参数innodb_autoinc_lock_mode控制自增锁的算法，可以控制自增值生成的策略来提高并发
 @ulend
 @snapend
