@@ -297,13 +297,9 @@ ENGINE_TRANSACTION_ID: 2631
 - show variables like '%transaction_isolation%';
 - set GLOBAL transaction_isolation='REPEATABLE-READ';
 - RC隔离级别+表无显式主键和索引: 
-
 - RR隔离级别+有显式主键无索引: 
-
 - select * from t for update;
-
 - select * from t where id = 10 for update;
-
 - RR隔离级别+有显式主键无索引: 
 - select * from t where id = 10 and name = 'zzs' for update;
 
@@ -314,20 +310,14 @@ ENGINE_TRANSACTION_ID: 2631
 - RR隔离级别+无显式主键有索引: 
 - 普通索引 
 - select * from t where id = 10 for update; 
-
 - insert into t values (9, 'zzy1');
-
 - RR隔离级别+无显式主键有索引: 
 - 普通索引 
 - insert into t values (19, 'zzu2'); 
-
 - insert into t values (20, 'zzu2');
-
-
 - RR隔离级别+无显式主键有索引: 
 - 唯一索引 
 - select * from t where id = 10 for update;
-
 - RR隔离级别+有显式主键有索引: 
 - 有显示主键普通索引 
 - select * from t for update;
@@ -336,19 +326,14 @@ ENGINE_TRANSACTION_ID: 2631
 
 +++
 @snap[text-05 border-dashed-black]
-
 - 切换RC隔离级别
 - show variables like '%transaction_isolation%';
 - set GLOBAL transaction_isolation='READ-COMMITTED';
-
 - select * from t for update; 
-
 - select * from t where id = 10 for update; 
-
 - RC隔离级别+无显式主键有索引: 
 - 普通索引 
 - select * from t where id = 10 for update; 
-
 - RC隔离级别+有显式键有索引: 
 - 不带where条件 
 - select * from t for update; 
@@ -359,11 +344,9 @@ ENGINE_TRANSACTION_ID: 2631
 #### 第二部分: Innodb中的死锁
 ##### 死锁的产生 
 @snap[text-06 border-dashed-black]
-
 - 当两个事务都试图获取另一个事务已经拥有的锁时，就会发生死锁 
 - 但会有一些不经意的地方会产生死锁
 - 现象 实验1
-
 @snapend
 
 +++
@@ -371,7 +354,6 @@ ENGINE_TRANSACTION_ID: 2631
 ##### 实战:插入意向锁死锁 
 
 @snap[text-06 border-dashed-black]
-
 - Next-Key Lock锁与插入意向锁兼容情况
 - session2等待session1上X锁的释放，随后的插入意向锁与session2 
 - GAP S-lock(Next-Key Lock)不兼容， 这样就会造成session1与 
@@ -381,7 +363,6 @@ ENGINE_TRANSACTION_ID: 2631
 - 通过innodb_trx表中的trx_weight来判断占用资源的大小，此案例中单独去 
 - 执行SQL通过查询innodb_trx表分别对应的trx_weight是 
 - 语句 trx_weight 
-
 @snapend
 
 +++
@@ -389,13 +370,11 @@ ENGINE_TRANSACTION_ID: 2631
 - 如何解读死锁日志？ 
 - 两个事务信息 
 - 事务xxxxx在执行delete语句是发生了锁等待
-
 ---
 
 ### 第三部分: MySQL中的元数据锁
 
 @snap[text-06 border-dashed-black]
-
 - MySQL中还具有一种表级别锁 MDL锁，防止读写能正常 
 - 当对一个表做增删改查操作的时候，加 MDL 读锁 
 - 读锁之间不互斥，可以多个线程同时对一张表增删改查 
@@ -410,7 +389,6 @@ ENGINE_TRANSACTION_ID: 2631
 +++
 
 @snap[text-06 border-dashed-black]
-
 - MySQL中元数据锁与备份之间关系 
 - Xtrbackup备份当中会对元数据申请MDL锁，所以备份时如果有长时间未执 
 - 行完的SQL语句会导致备份失败 
@@ -419,5 +397,4 @@ ENGINE_TRANSACTION_ID: 2631
 - 如果ddl语句执行时mysqldump处于刚show create table和select 数据之间，则ddl语句 
 - 能正常执行，但是mysqldump后面执行时就会报错终止 
 - Table defifini]on has changed, please retry transac]on 
-
 @snapend
