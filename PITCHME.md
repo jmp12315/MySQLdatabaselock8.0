@@ -61,6 +61,13 @@ docker run -p 3309:3306 --name mysql8_zzs -v $PWD/data:/var/lib/mysql \
 
 2、/bin/bash 进入 bash 命令模式
 $ docker exec -it test-mysql bash
+```
++++ 
+```sh
+
+mysql -h127.0.0.1 -P3309 -uroot -p123456
+
+use mysql;
 
 update user set host = '192.168.*' where user = 'root' and host = '%' ;
 
@@ -79,15 +86,12 @@ ALTER USER 'root'@'192.168.*' IDENTIFIED WITH mysql_native_password BY '123456';
 
 flush privileges;
 
+```
++++ 
+```sh
+
 [root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3309 -uroot -p123456
 Enter password: 
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 2
-Server version: 5.7.27 MySQL Community Server (GPL)
-
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
 MySQL [(none)]> exit
 Bye
