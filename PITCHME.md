@@ -38,7 +38,7 @@
 
 version: 3.5.4
 
-@snap[border-dashed-black] 
+@snap[text-06 mt]
 • 行锁 
 – Shared and Exclusive Locks 
 • 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
