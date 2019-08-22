@@ -198,8 +198,8 @@ Bye
 
 ##### 事务隔离级别为RR表中无显式主键与索引: 
 
-- select * from t for update; 
-- select * from t where id = 10 for update; 
+- select * from t2 for update; 
+- select * from t2 where id = 10 for update; 
 
 @snap[border-dashed-black]
 ```sql
@@ -222,18 +222,70 @@ MySQL [db_test]> select * from t2 for update;
 
 +++
 
-@snap[border-dashed-black]
+@snap[text-04 border-dashed-black]
 ```sql
-MySQL [performance_schema]> SELECT t.ENGINE_LOCK_ID, t.ENGINE_TRANSACTION_ID, t.THREAD_ID, t.EVENT_ID, t.OBJECT_SCHEMA, t.OBJECT_NAME, t.INDEX_NAME, t.LOCK_TYPE, t.LOCK_MODE, t.LOCK_STATUS,t.LOCK_DATA FROM data_locks AS t ;
-+---------------------------------------+-----------------------+-----------+----------+---------------+-------------+-----------------+-----------+-----------+-------------+------------------------+
-| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | EVENT_ID | OBJECT_SCHEMA | OBJECT_NAME | INDEX_NAME      | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA              |
-+---------------------------------------+-----------------------+-----------+----------+---------------+-------------+-----------------+-----------+-----------+-------------+------------------------+
-| 140285350388848:1065:140285241799576  |                  2631 |        61 |       25 | db_test       | t2          | NULL            | TABLE     | IX        | GRANTED     | NULL                   |
-| 140285350388848:4:4:1:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | supremum pseudo-record |
-| 140285350388848:4:4:2:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | 0x000000000200         |
-| 140285350388848:4:4:3:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | 0x000000000201         |
-| 140285350388848:4:4:4:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | 0x000000000202         |
-+---------------------------------------+-----------------------+-----------+----------+---------------+-------------+-----------------+-----------+-----------+-------------+------------------------+
+MySQL [performance_schema]> SELECT t.ENGINE_LOCK_ID, t.ENGINE_TRANSACTION_ID, t.THREAD_ID, t.EVENT_ID, 
+t.OBJECT_SCHEMA, t.OBJECT_NAME, t.INDEX_NAME, t.LOCK_TYPE, t.LOCK_MODE, t.LOCK_STATUS,t.LOCK_DATA FROM data_locks AS t \G
+*************************** 1. row ***************************
+       ENGINE_LOCK_ID: 140285350388848:1065:140285241799576
+ENGINE_TRANSACTION_ID: 2631
+            THREAD_ID: 61
+             EVENT_ID: 25
+        OBJECT_SCHEMA: db_test
+          OBJECT_NAME: t2
+           INDEX_NAME: NULL
+            LOCK_TYPE: TABLE
+            LOCK_MODE: IX
+          LOCK_STATUS: GRANTED
+            LOCK_DATA: NULL
+*************************** 2. row ***************************
+       ENGINE_LOCK_ID: 140285350388848:4:4:1:140285241796696
+ENGINE_TRANSACTION_ID: 2631
+            THREAD_ID: 61
+             EVENT_ID: 25
+        OBJECT_SCHEMA: db_test
+          OBJECT_NAME: t2
+           INDEX_NAME: GEN_CLUST_INDEX
+            LOCK_TYPE: RECORD
+            LOCK_MODE: X
+          LOCK_STATUS: GRANTED
+            LOCK_DATA: supremum pseudo-record
+*************************** 3. row ***************************
+       ENGINE_LOCK_ID: 140285350388848:4:4:2:140285241796696
+ENGINE_TRANSACTION_ID: 2631
+            THREAD_ID: 61
+             EVENT_ID: 25
+        OBJECT_SCHEMA: db_test
+          OBJECT_NAME: t2
+           INDEX_NAME: GEN_CLUST_INDEX
+            LOCK_TYPE: RECORD
+            LOCK_MODE: X
+          LOCK_STATUS: GRANTED
+            LOCK_DATA: 0x000000000200
+*************************** 4. row ***************************
+       ENGINE_LOCK_ID: 140285350388848:4:4:3:140285241796696
+ENGINE_TRANSACTION_ID: 2631
+            THREAD_ID: 61
+             EVENT_ID: 25
+        OBJECT_SCHEMA: db_test
+          OBJECT_NAME: t2
+           INDEX_NAME: GEN_CLUST_INDEX
+            LOCK_TYPE: RECORD
+            LOCK_MODE: X
+          LOCK_STATUS: GRANTED
+            LOCK_DATA: 0x000000000201
+*************************** 5. row ***************************
+       ENGINE_LOCK_ID: 140285350388848:4:4:4:140285241796696
+ENGINE_TRANSACTION_ID: 2631
+            THREAD_ID: 61
+             EVENT_ID: 25
+        OBJECT_SCHEMA: db_test
+          OBJECT_NAME: t2
+           INDEX_NAME: GEN_CLUST_INDEX
+            LOCK_TYPE: RECORD
+            LOCK_MODE: X
+          LOCK_STATUS: GRANTED
+            LOCK_DATA: 0x000000000202
 5 rows in set (0.00 sec)
 
 ```
