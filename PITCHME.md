@@ -42,7 +42,7 @@
 #注意修改  目录名称 zzs 映射端口 3307
 mkdir -p ~/zzs/mysql/{data,logs}
 
-docker run -d --name mysql_zzs  -v ~/zzs/mysql/data:/var/lib/mysql  -e MYSQL_ROOT_PASSWORD=111111  -p 3307:3306  my_mysql:5.7.1
+docker run -p 3309:3306 --name mysql8_zzs -v $PWD/data:/var/lib/mysql  -v $PWD/logs:/logs -e MYSQL_ROOT_PASSWORD=123456 -d my_mysql8:8.1
 
 [root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3307 -uroot -p
 Enter password: 
@@ -148,4 +148,34 @@ Bye
 - CREATE TABLE `t` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL);
 - insert into t values (10,'zzs'),(20,'zzy'),(30,'zjc'); 
 @ulend
+@snapend
+
+
+
+---
+
+### 实战1：上课环境准备
+
+
+@snap[border-dashed-black]
+```sh
+#练习 创建自己的mysql 
+#注意修改  目录名称 zzs 映射端口 3307
+mkdir -p ~/zzs/mysql/{data,logs}
+
+docker run -d --name mysql_zzs  -v ~/zzs/mysql/data:/var/lib/mysql  -e MYSQL_ROOT_PASSWORD=111111  -p 3307:3306  my_mysql:5.7.1
+
+[root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3307 -uroot -p
+Enter password: 
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2
+Server version: 5.7.27 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]> exit
+Bye
+```
 @snapend
