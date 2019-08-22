@@ -42,7 +42,8 @@
 #注意修改  目录名称 zzs 映射端口 3307
 mkdir -p ~/zzs/mysql/{data,logs}
 
-docker run -p 3309:3306 --name mysql8_zzs -v $PWD/data:/var/lib/mysql  -v $PWD/logs:/logs -e MYSQL_ROOT_PASSWORD=123456 -d my_mysql8:8.1
+docker run -p 3309:3306 --name mysql8_zzs -v $PWD/data:/var/lib/mysql \
+ -v $PWD/logs:/logs -e MYSQL_ROOT_PASSWORD=123456 -d my_mysql8:8.1
 
 [root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3307 -uroot -p
 Enter password: 
