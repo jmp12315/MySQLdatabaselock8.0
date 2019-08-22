@@ -19,16 +19,16 @@
 @snapend
 
 
-@snap[north-east span-40 text-08]
-@box[bg-green](第一部分: Innodb锁分类)
+@snap[north-east span-30 text-08]
+@box[bggold](第一部分: Innodb锁分类)
 @snapend
 
-@snap[east span-40 text-08]
-@box[bg-blue](第二部分: Innodb中的死锁)
+@snap[east span-30 text-08]
+@box[bg-green](第二部分: Innodb中的死锁)
 @snapend
 
-@snap[south-east span-40 text-08]
-@box[bg-gold](第三部分: MySQL中的元数据锁)
+@snap[south-east span-30 text-08]
+@box[bg-blue](第三部分: MySQL中的元数据锁)
 @snapend
 
 ---
@@ -185,7 +185,7 @@ Bye
 @ul
 - 不同的隔离级别及条件字段是否为主键/索引相关 
 - CREATE TABLE `t` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL,
-  PRIMARY KEY (`id`) USING );
+- PRIMARY KEY (`id`) USING );
 - insert into t values (10,'zzs'),(20,'zzy'),(30,'zjc'); 
 - CREATE TABLE `t2` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL);
 - insert into t values (10,'zzs'),(20,'zzy'),(30,'zjc'); 
@@ -306,15 +306,27 @@ ENGINE_TRANSACTION_ID: 2631
 @snapend
 
 +++
+
+```sql
+CREATE TABLE `t3` (
+`id` int(11) DEFAULT NULL,
+`name` char(20) DEFAULT NULL
+);
+
+insert into t3 values (10,'zzs'),(20,'zzy'),(30,'zjc');
+
+create index idx_id on t3 (id);
+```
+
 @snap[text-05 border-dashed-black]
 - RR隔离级别+无显式主键有索引: 
 - 普通索引 
-- select * from t where id = 10 for update; 
-- insert into t values (9, 'zzy1');
+- select * from t3 where id = 10 for update; 
+- insert into t3 values (9, 'zzy1');
 - RR隔离级别+无显式主键有索引: 
 - 普通索引 
-- insert into t values (19, 'zzu2'); 
-- insert into t values (20, 'zzu2');
+- insert into t3 values (19, 'zzu2'); 
+- insert into t3 values (20, 'zzu2');
 - RR隔离级别+无显式主键有索引: 
 - 唯一索引 
 - select * from t where id = 10 for update;
@@ -347,6 +359,10 @@ ENGINE_TRANSACTION_ID: 2631
 - 当两个事务都试图获取另一个事务已经拥有的锁时，就会发生死锁 
 - 但会有一些不经意的地方会产生死锁
 - 现象 实验1
+session1|session2
+---|:--:
+"MySQL [db_test]> begin; Query OK, 0 rows affected (0.00 sec) MySQL [db_test]> update t set name = 'kkk1' where id = 20; Query OK, 1 row affected (0.00 sec) Rows matched: 1  Changed: 1  Warnings: 0 "|空
+空|select * from t lock in share mode; 发生柱塞 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
 @snapend
 
 +++
