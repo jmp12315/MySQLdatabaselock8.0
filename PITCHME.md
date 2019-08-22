@@ -109,3 +109,15 @@
 - 参数innodb_autoinc_lock_mode控制自增锁的算法，可以控制自增值生成的策略来提高并发
 @ulend
 @snapend
+
+---
+
+### Innodb中加锁情况分析 
+#### 实战1： 建测试表，分析各种隔离级别的加锁情况
+@snap[text-06 border-dashed-black]
+@ul
+- 不同的隔离级别及条件字段是否为主键/索引相关 
+- CREATE TABLE `t` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL);
+- insert into t values (10,'zzs'),(20,'zzy'),(30,'zjc'); 
+@ulend
+@snapend
