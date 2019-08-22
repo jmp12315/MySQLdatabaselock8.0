@@ -37,7 +37,21 @@
 
 
 @snap[border-dashed-black]
+
+
 ```sh
+
+#有ssh工具的人 ssh登录 
+用户名：zzs2019 
+密码：123456
+
+
+# 没有ssh工具的人 登录网页 http://192.168.8.206:19822/zzs2019
+用户名：zzs
+密码：zzs2019 
+
+点击宝塔终端开始
+
 #练习 创建自己的mysql 
 #注意修改  目录名称 zzs 映射端口 3307
 mkdir -p ~/zzs/mysql/{data,logs}
@@ -45,7 +59,27 @@ mkdir -p ~/zzs/mysql/{data,logs}
 docker run -p 3309:3306 --name mysql8_zzs -v $PWD/data:/var/lib/mysql \
  -v $PWD/logs:/logs -e MYSQL_ROOT_PASSWORD=123456 -d my_mysql8:8.1
 
-[root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3307 -uroot -p
+2、/bin/bash 进入 bash 命令模式
+$ docker exec -it test-mysql bash
+
+update user set host = '192.168.*' where user = 'root' and host = '%' ;
+
+update user set host = '%' where user = 'root' and host = 'localhost'  ;
+
+
+ALTER USER 'root'@'%' IDENTIFIED BY '123456' PASSWORD EXPIRE NEVER;
+
+ALTER USER 'root'@'192.168.*' IDENTIFIED BY '123456' PASSWORD EXPIRE NEVER;
+
+
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+
+
+ALTER USER 'root'@'192.168.*' IDENTIFIED WITH mysql_native_password BY '123456';
+
+flush privileges;
+
+[root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3309 -uroot -p123456
 Enter password: 
 Welcome to the MariaDB monitor.  Commands end with ; or \g.
 Your MySQL connection id is 2
