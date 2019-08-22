@@ -34,7 +34,7 @@
 ---
 ##  行锁 
 
-@snap[text-06 text-blue]
+@snap[text-06 border-dashed-black]
 @ul
 - Shared and Exclusive Locks 
 - 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
@@ -53,7 +53,7 @@
 
 ##  行锁 
 
-@snap[text-06 text-blue]
+@snap[text-06 border-dashed-black]
 @ul
 - Shared and Exclusive Locks 
 - 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
