@@ -31,3 +31,26 @@
 @box[bg-gold](第三部分: MySQL中的元数据锁)
 @snapend
 
+
+
+---
+#### Innodb中锁分类
+
+version: 3.5.4
+
+@snap[border-dashed-black] 
+• 行锁 
+– Shared and Exclusive Locks 
+• 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
+– 当读取当一行记录时为了防止别人修改则需要添加S锁 
+– 当修改一行记录时为了防止别人同时进行修改则需要添加X锁 
+• 这里需要知道MySQL中具有MVCC特性，所以通常情况下普通的查询属于一致性非锁 
+定读不会添加任何锁，另外一种是锁定读例如 
+– SELECT … FOR SHARE 
+» 添加S共享锁，其它事务可以读但修改会被阻塞 
+– SELECT … FOR UPDATE 
+» 添加X排他锁，其它事务修改或者执行SELECT … FOR SHARE都会被阻塞 
+@snapend
+
+
+---
