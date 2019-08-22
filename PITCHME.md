@@ -32,6 +32,34 @@
 @snapend
 
 ---
+
+### 实战1：上课环境准备
+
+
+@snap[border-dashed-black]
+```sh
+#练习 创建自己的mysql 
+#注意修改  目录名称 zzs 映射端口 3307
+mkdir -p ~/zzs/mysql/{data,logs}
+
+docker run -d --name mysql_zzs  -v ~/zzs/mysql/data:/var/lib/mysql  -e MYSQL_ROOT_PASSWORD=111111  -p 3307:3306  my_mysql:5.7.1
+
+[root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3307 -uroot -p
+Enter password: 
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2
+Server version: 5.7.27 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]> exit
+Bye
+```
+@snapend
+
+---
 ##  行锁  
 
 @snap[text-06 border-dashed-black]
@@ -113,7 +141,7 @@
 ---
 
 ### Innodb中加锁情况分析 
-#### 实战1： 建测试表，分析各种隔离级别的加锁情况
+#### 实战2： 建测试表，分析各种隔离级别的加锁情况
 @snap[text-06 border-dashed-black]
 @ul
 - 不同的隔离级别及条件字段是否为主键/索引相关 
