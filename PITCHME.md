@@ -168,7 +168,7 @@ Bye
 
 @snap[text-06 border-dashed-black]
 @ul
--  Inten]on Locks-意向锁:意向锁在MySQL中是表级别锁，表示将来要在表上什么类型的锁(IX/IS) 
+-  Intention Locks-意向锁:意向锁在MySQL中是表级别锁，表示将来要在表上什么类型的锁(IX/IS) 
 - SELECT … FOR SHARE 意向共享锁(IS):要获取表中某行的共享锁之前，它必须首先在表 上获取IS锁 
 - SELECT … FOR UPDATE 意向排他锁(IX):要获取表中某行的独占锁之前，它必须首先获取表上的IX锁 
 - AUTO-INC Locks-自增锁 
@@ -289,4 +289,88 @@ ENGINE_TRANSACTION_ID: 2631
 5 rows in set (0.00 sec)
 
 ```
+@snapend
+
++++
+
+- 切换RR隔离级别
+- show variables like '%transaction_isolation%';
+- set GLOBAL transaction_isolation='REPEATABLE-READ';
+- RC隔离级别+表无显式主键和索引: 
+
+- RR隔离级别+有显式主键无索引: 
+
+- select * from t for update;
+
+- select * from t where id = 10 for update;
+
+- RR隔离级别+有显式主键无索引: 
+- select * from t where id = 10 and name = 'zzs' for update;
+
++++
+- RR隔离级别+无显式主键有索引: 
+- 普通索引 
+- select * from t where id = 10 for update; 
+
+- insert into t values (9, 'zzy1');
+
+- RR隔离级别+无显式主键有索引: 
+- 普通索引 
+- insert into t values (19, 'zzu2'); 
+
+- insert into t values (20, 'zzu2');
+
+
+- RR隔离级别+无显式主键有索引: 
+- 唯一索引 
+- select * from t where id = 10 for update;
+
+- RR隔离级别+有显式主键有索引: 
+- 有显示主键普通索引 
+- select * from t for update;
+
++++
+- 切换RC隔离级别
+- show variables like '%transaction_isolation%';
+- set GLOBAL transaction_isolation='READ-COMMITTED';
+
+- select * from t for update; 
+
+- select * from t where id = 10 for update; 
+
+- RC隔离级别+无显式主键有索引: 
+- 普通索引 
+- select * from t where id = 10 for update; 
+
+- RC隔离级别+有显式键有索引: 
+- 不带where条件 
+- select * from t for update; 
+
+---
+## 第二部分: Innodb中的死锁
+#### 死锁的产生 
+@snap[text-06 border-dashed-black]
+@ul
+- 当两个事务都试图获取另一个事务已经拥有的锁时，就会发生死锁 
+- 但会有一些不经意的地方会产生死锁
+- 现象 实验1
+@ulend
+@snapend
+
++++
+
+##### 实战:插入意向锁死锁 
+
+@snap[text-06 border-dashed-black]
+@ul
+- Next-Key Lock锁与插入意向锁兼容情况
+- session2等待session1上X锁的释放，随后的插入意向锁与session2 
+GAP S-lock(Next-Key Lock)不兼容， 这样就会造成session1与 
+session2都不能同时进行下去了造成了死锁
+出现死锁时选择回滚哪个事务？ 
+- Innodb中出现死锁时选择回滚代价小的事务 
+- 通过innodb_trx表中的trx_weight来判断占用资源的大小，此案例中单独去 
+执行SQL通过查询innodb_trx表分别对应的trx_weight是 
+语句 trx_weight 
+@ulend
 @snapend
