@@ -32,8 +32,10 @@
 @snapend
 
 ---
-#  行锁 
-@snapend
+###  行锁 
+
+@snap[text-05 text-blue]
+@ul
 - Shared and Exclusive Locks 
 + 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
 * 当读取当一行记录时为了防止别人修改则需要添加S锁 
@@ -44,3 +46,4 @@
 + SELECT … FOR UPDATE 
 * 添加X排他锁，其它事务修改或者执行SELECT … FOR SHARE都会被阻塞 
 @ulend
+@snapend
