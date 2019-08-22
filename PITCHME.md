@@ -480,3 +480,6 @@ MySQL [performance_schema]> SELECT t.ENGINE_LOCK_ID, t.ENGINE_TRANSACTION_ID, t.
 - 能正常执行，但是mysqldump后面执行时就会报错终止 
 - Table defifini]on has changed, please retry transac]on 
 @snapend
+
+---
+##### 谢谢
