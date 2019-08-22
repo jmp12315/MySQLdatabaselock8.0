@@ -293,7 +293,6 @@ ENGINE_TRANSACTION_ID: 2631
 
 +++
 @snap[text-05 border-dashed-black]
-@ul
 - 切换RR隔离级别
 - show variables like '%transaction_isolation%';
 - set GLOBAL transaction_isolation='REPEATABLE-READ';
@@ -307,12 +306,11 @@ ENGINE_TRANSACTION_ID: 2631
 
 - RR隔离级别+有显式主键无索引: 
 - select * from t where id = 10 and name = 'zzs' for update;
-@ulend
+
 @snapend
 
 +++
 @snap[text-05 border-dashed-black]
-@ul
 - RR隔离级别+无显式主键有索引: 
 - 普通索引 
 - select * from t where id = 10 for update; 
@@ -333,12 +331,12 @@ ENGINE_TRANSACTION_ID: 2631
 - RR隔离级别+有显式主键有索引: 
 - 有显示主键普通索引 
 - select * from t for update;
-@ulend
+
 @snapend
 
 +++
 @snap[text-05 border-dashed-black]
-@ul
+
 - 切换RC隔离级别
 - show variables like '%transaction_isolation%';
 - set GLOBAL transaction_isolation='READ-COMMITTED';
@@ -354,18 +352,18 @@ ENGINE_TRANSACTION_ID: 2631
 - RC隔离级别+有显式键有索引: 
 - 不带where条件 
 - select * from t for update; 
-@ulend
+
 @snapend
 
 ---
 #### 第二部分: Innodb中的死锁
 ##### 死锁的产生 
 @snap[text-06 border-dashed-black]
-@ul
+
 - 当两个事务都试图获取另一个事务已经拥有的锁时，就会发生死锁 
 - 但会有一些不经意的地方会产生死锁
 - 现象 实验1
-@ulend
+
 @snapend
 
 +++
@@ -373,7 +371,7 @@ ENGINE_TRANSACTION_ID: 2631
 ##### 实战:插入意向锁死锁 
 
 @snap[text-06 border-dashed-black]
-@ul
+
 - Next-Key Lock锁与插入意向锁兼容情况
 - session2等待session1上X锁的释放，随后的插入意向锁与session2 
 - GAP S-lock(Next-Key Lock)不兼容， 这样就会造成session1与 
@@ -383,7 +381,7 @@ ENGINE_TRANSACTION_ID: 2631
 - 通过innodb_trx表中的trx_weight来判断占用资源的大小，此案例中单独去 
 - 执行SQL通过查询innodb_trx表分别对应的trx_weight是 
 - 语句 trx_weight 
-@ulend
+
 @snapend
 
 +++
@@ -394,11 +392,10 @@ ENGINE_TRANSACTION_ID: 2631
 
 ---
 
-
 ### 第三部分: MySQL中的元数据锁
 
 @snap[text-06 border-dashed-black]
-@ul
+
 - MySQL中还具有一种表级别锁 MDL锁，防止读写能正常 
 - 当对一个表做增删改查操作的时候，加 MDL 读锁 
 - 读锁之间不互斥，可以多个线程同时对一张表增删改查 
@@ -407,13 +404,13 @@ ENGINE_TRANSACTION_ID: 2631
 - 线程要同时给一个表加字段，其中一个要等另一个执行完才能开始执行 
 - 线上对表做DDL操作时需要避免有大事务存在 
 - 会导导致业务不能正常访问
-@ulend
+
 @snapend
 
 +++
 
 @snap[text-06 border-dashed-black]
-@ul
+
 - MySQL中元数据锁与备份之间关系 
 - Xtrbackup备份当中会对元数据申请MDL锁，所以备份时如果有长时间未执 
 - 行完的SQL语句会导致备份失败 
@@ -422,5 +419,5 @@ ENGINE_TRANSACTION_ID: 2631
 - 如果ddl语句执行时mysqldump处于刚show create table和select 数据之间，则ddl语句 
 - 能正常执行，但是mysqldump后面执行时就会报错终止 
 - Table defifini]on has changed, please retry transac]on 
-@ulend
+
 @snapend
