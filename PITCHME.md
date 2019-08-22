@@ -356,6 +356,7 @@ create index idx_id on t3 (id);
 #### 第二部分: Innodb中的死锁
 ##### 死锁的产生 
 @snap[text-06 border-dashed-black]
+
 - 当两个事务都试图获取另一个事务已经拥有的锁时，就会发生死锁 
 - 但会有一些不经意的地方会产生死锁
 - 现象 实验1
@@ -363,8 +364,73 @@ session1|session2
 ---|:--:
 "MySQL [db_test]> begin; Query OK, 0 rows affected (0.00 sec) MySQL [db_test]> update t set name = 'kkk1' where id = 20; Query OK, 1 row affected (0.00 sec) Rows matched: 1  Changed: 1  Warnings: 0 "|空
 空|select * from t lock in share mode; 发生柱塞 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+insert into t valuses(11,'zzz111');|
 @snapend
 
++++
+
+```sql
+MySQL [db_test]> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+MySQL [db_test]> select @@autocommit;
++--------------+
+| @@autocommit |
++--------------+
+|            0 |
++--------------+
+1 row in set (0.00 sec)
+session1
+MySQL [db_test]> begin;
+Query OK, 0 rows affected (0.00 sec)
+
+MySQL [db_test]> update t set name = 'kkk1' where id = 20;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MySQL [db_test]> insert into t valuses(11,'zzz111');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'valuses(11,'zzz111')' at line 1
+
+```
++++
+```sql
+session2
+MySQL [db_test]> set autocommit=0;
+Query OK, 0 rows affected (0.00 sec)
+
+MySQL [db_test]> select @@autocommit;
++--------------+
+| @@autocommit |
++--------------+
+|            0 |
++--------------+
+1 row in set (0.00 sec)
+
+MySQL [db_test]> begin;
+Query OK, 0 rows affected (0.00 sec)
+
+MySQL [db_test]> select * from t lock in share mode;
+ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+
+```
+
+
++++
+```sql
+MySQL [performance_schema]> SELECT t.ENGINE_LOCK_ID, t.ENGINE_TRANSACTION_ID, t.THREAD_ID, t.EVENT_ID, t.OBJECT_SCHEMA, t.OBJECT_NAME, t.INDEX_NAME, t.LOCK_TYPE, t.LOCK_MODE, t.LOCK_STATUS,t.LOCK_DATA FROM data_locks AS t ;
++---------------------------------------+-----------------------+-----------+----------+---------------+-------------+------------+-----------+---------------+-------------+-----------+
+| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | EVENT_ID | OBJECT_SCHEMA | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
++---------------------------------------+-----------------------+-----------+----------+---------------+-------------+------------+-----------+---------------+-------------+-----------+
+| 140285350388848:1063:140285241799576  |                  2669 |        61 |       56 | db_test       | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+| 140285350388848:2:4:3:140285241796696 |                  2669 |        61 |       56 | db_test       | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 20        |
+| 140285350391440:1063:140285241817448  |       421760327102096 |        65 |       33 | db_test       | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+| 140285350391440:2:4:2:140285241814664 |       421760327102096 |        65 |       33 | db_test       | t           | PRIMARY    | RECORD    | S             | GRANTED     | 10        |
+| 140285350391440:2:4:3:140285241815008 |       421760327102096 |        65 |       33 | db_test       | t           | PRIMARY    | RECORD    | S             | WAITING     | 20        |
++---------------------------------------+-----------------------+-----------+----------+---------------+-------------+------------+-----------+---------------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+
+```
 +++
 
 ##### 实战:插入意向锁死锁 
