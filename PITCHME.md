@@ -360,11 +360,14 @@ create index idx_id on t3 (id);
 - 当两个事务都试图获取另一个事务已经拥有的锁时，就会发生死锁 
 - 但会有一些不经意的地方会产生死锁
 - 现象 实验1
-session1|session2
----|:--:
-"MySQL [db_test]> begin; Query OK, 0 rows affected (0.00 sec) MySQL [db_test]> update t set name = 'kkk1' where id = 20; Query OK, 1 row affected (0.00 sec) Rows matched: 1  Changed: 1  Warnings: 0 "|空
-空|select * from t lock in share mode; 发生柱塞 ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
-insert into t valuses(11,'zzz111');|
+```sql
++--------------+--------------+
+|      session1|      session2|
++--------------+--------------+
+update t set name = 'kkk1' where id = 20;|空|
+|空|select * from t lock in share mode; 发生柱塞 |
+|insert into t valuses(11,'zzz111');|死锁|
+```
 @snapend
 
 +++
