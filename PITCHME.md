@@ -32,11 +32,11 @@
 @snapend
 
 ---
-##  行锁 
+##  行锁  
 
 @snap[text-06 border-dashed-black]
 @ul
-- Shared and Exclusive Locks 
+- Shared and Exclusive Locks
 - 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
 - 当读取当一行记录时为了防止别人修改则需要添加S锁 
 - 当修改一行记录时为了防止别人同时进行修改则需要添加X锁 
@@ -49,20 +49,40 @@
 @snapend
 
 
----
++++
 
-##  行锁 
+##  行锁
 
 @snap[text-06 border-dashed-black]
 @ul
-- Shared and Exclusive Locks 
-- 行共享锁(S)与排他锁(X)较好理解， S锁与X锁互相冲突 
-- 当读取当一行记录时为了防止别人修改则需要添加S锁 
-- 当修改一行记录时为了防止别人同时进行修改则需要添加X锁 
-- 这里需要知道MySQL中具有MVCC特性，所以通常情况下普通的查询属于一致性非锁定读不会添加任何锁，另外一种是锁定读例如 
-- SELECT … FOR SHARE 
-- 添加S共享锁，其它事务可以读但修改会被阻塞 
-- SELECT … FOR UPDATE 
-- 添加X排他锁，其它事务修改或者执行SELECT … FOR SHARE都会被阻塞 
+- Record Locks-记录锁 
+- MySQL中记录锁都是添加在索引上，即使表上没有索引也会在隐藏的聚集索引上添 加记录锁
+- Gap Locks-间隙锁 
+- 间隙锁锁定范围是索引记录之间的间隙或者第一个或最后一个索引记录之前的间隙，
+- 例如一个事务执行:select * from t where c1 > 10 and c1 < 20 for update ; 那么当插入c1 
+- 等于15时就会被阻塞否则再次查询得到结果就与第一次不一致 
+- Next-Key Locks  
+- Next-Key Locks是Record Locks与Gap Locks间隙锁的组合，也就是索引记录本身加上 
+- 之前的间隙。间隙锁防止了保证RR级别下不出现幻读现象会，防止同一个事务内得
+- 到的结果不一致。间隙锁在show engine innodb 输出如下 
+@ulend
+@snapend
+
++++
+
+##  行锁
+
+@snap[text-06 border-dashed-black]
+@ul
+- Record Locks-记录锁 
+- MySQL中记录锁都是添加在索引上，即使表上没有索引也会在隐藏的聚集索引上添 加记录锁
+- Gap Locks-间隙锁 
+- 间隙锁锁定范围是索引记录之间的间隙或者第一个或最后一个索引记录之前的间隙，
+- 例如一个事务执行:select * from t where c1 > 10 and c1 < 20 for update ; 那么当插入c1 
+- 等于15时就会被阻塞否则再次查询得到结果就与第一次不一致 
+- Next-Key Locks  
+- Next-Key Locks是Record Locks与Gap Locks间隙锁的组合，也就是索引记录本身加上 
+- 之前的间隙。间隙锁防止了保证RR级别下不出现幻读现象会，防止同一个事务内得
+- 到的结果不一致。间隙锁在show engine innodb 输出如下 
 @ulend
 @snapend
