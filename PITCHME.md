@@ -20,7 +20,7 @@
 
 
 @snap[north-east span-30 text-08]
-@box[bggold](第一部分: Innodb锁分类)
+@box[bg-gold](第一部分: Innodb锁分类)
 @snapend
 
 @snap[east span-30 text-08]
