@@ -47,3 +47,6 @@
 * 添加X排他锁，其它事务修改或者执行SELECT … FOR SHARE都会被阻塞 
 @ulend
 @snapend
+
+
+---
