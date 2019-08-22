@@ -184,37 +184,57 @@ Bye
 @snap[text-06 border-dashed-black]
 @ul
 - 不同的隔离级别及条件字段是否为主键/索引相关 
-- CREATE TABLE `t` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL);
+- CREATE TABLE `t` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL,
+  PRIMARY KEY (`id`) USING );
+- insert into t values (10,'zzs'),(20,'zzy'),(30,'zjc'); 
+- CREATE TABLE `t2` (`id` int(11) DEFAULT NULL,`name` char(20) DEFAULT NULL);
 - insert into t values (10,'zzs'),(20,'zzy'),(30,'zjc'); 
 @ulend
 @snapend
 
 
 
----
++++
 
-### 实战1：上课环境准备
+##### 事务隔离级别为RR表中无显式主键与索引: 
 
+- select * from t for update; 
+- select * from t where id = 10 for update; 
 
 @snap[border-dashed-black]
-```sh
-#练习 创建自己的mysql 
-#注意修改  目录名称 zzs 映射端口 3307
-mkdir -p ~/zzs/mysql/{data,logs}
+```sql
+MySQL [db_test]> begin;
+Query OK, 0 rows affected (0.00 sec)
 
-docker run -d --name mysql_zzs  -v ~/zzs/mysql/data:/var/lib/mysql  -e MYSQL_ROOT_PASSWORD=111111  -p 3307:3306  my_mysql:5.7.1
+MySQL [db_test]> select * from t2 for update;
++------+------+
+| id   | name |
++------+------+
+|   10 | zzs  |
+|   20 | zzy  |
+|   30 | zjc  |
++------+------+
+3 rows in set (0.00 sec)
 
-[root@zzs-lenovo-ll mysql]# mysql -h127.0.0.1 -P3307 -uroot -p
-Enter password: 
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MySQL connection id is 2
-Server version: 5.7.27 MySQL Community Server (GPL)
 
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+```
 
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 
-MySQL [(none)]> exit
-Bye
++++
+
+@snap[border-dashed-black]
+```sql
+MySQL [performance_schema]> SELECT t.ENGINE_LOCK_ID, t.ENGINE_TRANSACTION_ID, t.THREAD_ID, t.EVENT_ID, t.OBJECT_SCHEMA, t.OBJECT_NAME, t.INDEX_NAME, t.LOCK_TYPE, t.LOCK_MODE, t.LOCK_STATUS,t.LOCK_DATA FROM data_locks AS t ;
++---------------------------------------+-----------------------+-----------+----------+---------------+-------------+-----------------+-----------+-----------+-------------+------------------------+
+| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | EVENT_ID | OBJECT_SCHEMA | OBJECT_NAME | INDEX_NAME      | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA              |
++---------------------------------------+-----------------------+-----------+----------+---------------+-------------+-----------------+-----------+-----------+-------------+------------------------+
+| 140285350388848:1065:140285241799576  |                  2631 |        61 |       25 | db_test       | t2          | NULL            | TABLE     | IX        | GRANTED     | NULL                   |
+| 140285350388848:4:4:1:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | supremum pseudo-record |
+| 140285350388848:4:4:2:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | 0x000000000200         |
+| 140285350388848:4:4:3:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | 0x000000000201         |
+| 140285350388848:4:4:4:140285241796696 |                  2631 |        61 |       25 | db_test       | t2          | GEN_CLUST_INDEX | RECORD    | X         | GRANTED     | 0x000000000202         |
++---------------------------------------+-----------------------+-----------+----------+---------------+-------------+-----------------+-----------+-----------+-------------+------------------------+
+5 rows in set (0.00 sec)
+
 ```
 @snapend
